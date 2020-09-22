@@ -41,7 +41,7 @@ int main()
 {
 	priority_queue <point, vector<point>, orderPointValue> nextPoint;
 	unordered_map<int, point> map;
-	
+
 	float pointData[y][x] = {
 		{ 0,0,0,0,0,0,0,0,0,2 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
@@ -60,10 +60,23 @@ int main()
 			point p = point();
 			int idVal = (i*x) + j;
 			int coords[2];
-			if (retCoords(idVal, coords)) {
-				cout << "X: " << coords[1] << "Y: " << coords[0] << endl;
+
+			int leftCell = idVal - 10;
+			int downCell = idVal - 1;
+
+			if (leftCell > -1) {
+				map[leftCell].rightNeighbour = idVal;
+				p.leftNeighbour = leftCell;
+				cout << "Transaction horizontal with " << idVal << " and " << leftCell << endl;
 			}
-			map.insert(pair<int, point>(idVal, p));		
+
+			if (downCell > -1) {
+				map[downCell].upNeighbour = idVal;
+				p.downNeighbour = downCell;
+				cout << "Transaction vertical with " << idVal << " and " << downCell << endl;
+			}
+
+			map.insert(pair<int, point>(idVal, p));
 		}
 
 	//for (int i = 0; i < y; i++)
