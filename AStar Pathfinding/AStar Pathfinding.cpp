@@ -96,7 +96,7 @@ int main()
 
 
 	int pointData[y][x] = {
-		{ 0,0,0,0,0,0,0,0,0,2 },
+		{ 0,1,0,0,0,0,0,0,0,2 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
@@ -104,7 +104,7 @@ int main()
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,1,0,0,0,0,0,0,0,0 },
+		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 }
 	};
 
@@ -134,11 +134,13 @@ int main()
 			map.insert(pair<int, point>(idVal, p));
 
 			switch (pointData[i][j]) {
-			case 0:
-				startNode = idVal;
-				break;
 			case 1:
+				startNode = idVal;
+				cout << "Start: " << startNode << endl;
+				break;
+			case 2:
 				endNode = idVal;
+				cout << "End: " << endNode << endl;
 				break;
 			}
 		}
@@ -165,18 +167,23 @@ int main()
 		calculateCost(pInst.upNeighbour, newGCost);
 		calculateCost(pInst.downNeighbour, newGCost);
 		nextPoint.pop();
+
+		for (int i = 0; i < x*y; i++) {
+
+			if (i == startNode)
+				cout << "S ";
+			else if (i == endNode)
+				cout << "E ";
+			else
+				cout << map[i].fCost << " ";
+
+			if ((i + 1) % x == 0)
+				cout << endl;
+		}
+		system("pause");
 	}
 
-	for (int i = 0; i < x*y; i++) {
-
-		if (i == startNode || i == endNode)
-			cout << "* ";
-		else
-			cout << map[i].fCost << " ";
-
-		if ((i + 1) % x == 0)
-			cout << endl;
-	}
+	
 
 	//for (int i = 0; i < y; i++)
 		//for (int j = 0; j < x; j++)
