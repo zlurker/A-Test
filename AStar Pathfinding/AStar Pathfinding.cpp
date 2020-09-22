@@ -26,6 +26,7 @@ public:
 	int hCost;
 	int gCost;
 	int fCost;
+	int pointId;
 
 	point() {
 		upNeighbour = -1;
@@ -44,11 +45,11 @@ public:
 
 struct orderPointValue
 {
-	bool operator() (point const *a, point const *b) { return a->fCost > b->fCost; }
+	bool operator() (point* const a, point* const b) { return a->fCost > b->fCost; }
 };
 
 priority_queue <point*, vector<point*>, orderPointValue> nextPoint;
-unordered_map<int, point> map;
+unordered_map<int, point*> map;
 
 bool retCoords(int id, int* arr) {
 	if (id < 0 || id >= x*y)
@@ -63,7 +64,7 @@ void calculateCost(int id, int gCost) {
 	if (id < 0 || id >= x*y)
 		return;
 
-	if (map[id].hCost == -1) {
+	if (map[id]->hCost == -1) {
 
 		int coords0[2];
 		int coords1[2];
@@ -76,25 +77,23 @@ void calculateCost(int id, int gCost) {
 		xDiff = abs(coords1[1] - coords0[1]);
 		yDiff = abs(coords1[0] - coords0[0]);
 
-		map[id].hCost = (xDiff * xDiff) + (yDiff * yDiff);
+		map[id]->hCost = (xDiff * xDiff) + (yDiff * yDiff);
 	}
 
-	if (map[id].gCost == -1 || map[id].gCost > gCost && !map[id].used) {
-		map[id].gCost = gCost;
-		map[id].fCost = gCost + map[id].hCost;
+	if (map[id]->gCost == -1 || map[id]->gCost > gCost && !map[id]->used) {
+		map[id]->gCost = gCost;
+		map[id]->fCost = gCost + map[id]->hCost;
 
 	}
 
-	if (!map[id].openList) {
-		map[id].openList = true;
-		nextPoint.push(&map[id]);
+	if (!map[id]->openList) {
+		map[id]->openList = true;
+		nextPoint.push(map[id]);
 	}
 }
 
 int main()
 {
-
-
 	int pointData[y][x] = {
 		{ 0,0,0,0,0,0,0,0,0,2 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
@@ -108,29 +107,28 @@ int main()
 		{ 0,0,0,0,0,0,0,0,0,0 }
 	};
 
-
-
 	for (int i = 0; i < y; i++)
 		for (int j = 0; j < x; j++) {
-			point p = point();
+			point* p = new point();
 			int idVal = (i*x) + j;
 
+			p->pointId = idVal;
 			int leftCell = idVal - 10;
 			int downCell = idVal - 1;
 
 			if (leftCell > -1) {
-				map[leftCell].rightNeighbour = idVal;
-				p.leftNeighbour = leftCell;
+				map[leftCell]->rightNeighbour = idVal;
+				p->leftNeighbour = leftCell;
 				//cout << "Transaction horizontal with " << idVal << " and " << leftCell << endl;
 			}
 
 			if (downCell > -1) {
-				map[downCell].upNeighbour = idVal;
-				p.downNeighbour = downCell;
+				map[downCell]->upNeighbour = idVal;
+				p->downNeighbour = downCell;
 				//cout << "Transaction vertical with " << idVal << " and " << downCell << endl;
 			}
 
-			map.insert(pair<int, point>(idVal, p));
+			map.insert(pair<int, point*>(idVal, p));
 
 			switch (pointData[i][j]) {
 			case 1:
@@ -150,10 +148,10 @@ int main()
 		return 0;
 	}
 
-	map[startNode].fCost = 0;
-	map[startNode].gCost = 0;
-	map[startNode].hCost = 0;
-	nextPoint.push(&map[startNode]);
+	map[startNode]->fCost = 0;
+	map[startNode]->gCost = 0;
+	map[startNode]->hCost = 0;
+	nextPoint.push(map[startNode]);
 
 	cout << "Begin path searching...";
 
@@ -161,6 +159,13 @@ int main()
 		system("pause");
 		system("CLS");
 		point* pInst = nextPoint.top();
+
+		if (pInst->pointId == endNode) {
+			cout << "Path has been found!";
+			system("pause");
+			return 0;
+		}
+
 		pInst->used = true;
 		//
 		cout << "change result: " << pInst->used << endl;
@@ -178,18 +183,18 @@ int main()
 				cout << "S ";
 			else if (i == endNode)
 				cout << "E ";
-			else if (map[i].used)
+			else if (map[i]->used)
 				cout << "* ";
 			else
-				cout << map[i].fCost << " ";
+				cout << map[i]->fCost << " ";
 
 			if ((i + 1) % x == 0)
 				cout << endl;
 		}
-		
+
 	}
 
-	
+
 
 	//for (int i = 0; i < y; i++)
 		//for (int j = 0; j < x; j++)
@@ -213,7 +218,7 @@ int main()
 		//nextPoint.pop();
 	//}
 
-	cout << "Path has been found!";
+	cout << "Path has not been found!";
 	system("pause");
 
 	return 0;
