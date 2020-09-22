@@ -33,6 +33,10 @@ public:
 		downNeighbour = -1;
 		leftNeighbour = -1;
 		rightNeighbour = -1;
+
+		hCost = -1;
+		gCost = 0;
+		fCost = 0;
 	}
 };
 
@@ -50,25 +54,30 @@ bool retCoords(int id, int* arr) {
 	return true;
 }
 
-int calculateHCost(int id) {
+void calculateCost(point* pInst, int id, int gCost) {
 	if (id < 0 || id >= x*y)
 		return;
 
-	int coords0[2];
-	int coords1[2];
+	if (pInst->hCost == -1) {
 
-	retCoords(id, coords0);
-	retCoords(endNode, coords1);
+		int coords0[2];
+		int coords1[2];
 
-	int xDiff, yDiff = 0;
+		retCoords(id, coords0);
+		retCoords(endNode, coords1);
 
-	xDiff = abs(coords1[1] - coords0[1]);
-	yDiff = abs(coords1[0] - coords0[0]);
+		int xDiff, yDiff = 0;
 
-	int hCost = (xDiff * xDiff) + (yDiff * yDiff);
+		xDiff = abs(coords1[1] - coords0[1]);
+		yDiff = abs(coords1[0] - coords0[0]);
 
-	// returns F which is H + G
-	return hCost;
+		pInst->hCost = (xDiff * xDiff) + (yDiff * yDiff);
+	}
+
+	if (pInst->gCost > gCost) {
+		pInst->gCost = gCost;
+		pInst->fCost = gCost + pInst->hCost;
+	}
 }
 
 int main()
@@ -135,7 +144,13 @@ int main()
 
 	while (!nextPoint.empty()) {
 		point pInst = nextPoint.top();
-		
+
+		int newGCost = pInst.gCost + 1;
+
+		calculateCost(&map[pInst.leftNeighbour],pInst.leftNeighbour,newGCost);
+		calculateCost(&map[pInst.rightNeighbour], pInst.rightNeighbour, newGCost);
+		calculateCost(&map[pInst.upNeighbour], pInst.upNeighbour, newGCost);
+		calculateCost(&map[pInst.downNeighbour], pInst.downNeighbour, newGCost);
 	}
 
 	//for (int i = 0; i < y; i++)
