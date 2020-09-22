@@ -44,10 +44,10 @@ public:
 
 struct orderPointValue
 {
-	bool operator() (point const &a, point const &b) { return a.fCost > b.fCost; }
+	bool operator() (point const *a, point const *b) { return a->fCost > b->fCost; }
 };
 
-priority_queue <point, vector<point>, orderPointValue> nextPoint;
+priority_queue <point*, vector<point*>, orderPointValue> nextPoint;
 unordered_map<int, point> map;
 
 bool retCoords(int id, int* arr) {
@@ -82,12 +82,12 @@ void calculateCost(int id, int gCost) {
 	if (map[id].gCost == -1 || map[id].gCost > gCost && !map[id].used) {
 		map[id].gCost = gCost;
 		map[id].fCost = gCost + map[id].hCost;
-		map[id].used = true;
+
 	}
 
 	if (!map[id].openList) {
 		map[id].openList = true;
-		nextPoint.push(map[id]);
+		nextPoint.push(&map[id]);
 	}
 }
 
@@ -96,14 +96,14 @@ int main()
 
 
 	int pointData[y][x] = {
-		{ 0,1,0,0,0,0,0,0,0,2 },
+		{ 0,0,0,0,0,0,0,0,0,2 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
+		{ 0,0,1,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 }
 	};
@@ -114,7 +114,6 @@ int main()
 		for (int j = 0; j < x; j++) {
 			point p = point();
 			int idVal = (i*x) + j;
-			int coords[2];
 
 			int leftCell = idVal - 10;
 			int downCell = idVal - 1;
@@ -154,33 +153,40 @@ int main()
 	map[startNode].fCost = 0;
 	map[startNode].gCost = 0;
 	map[startNode].hCost = 0;
-	map[startNode].used = true;
-	nextPoint.push(map[startNode]);
+	nextPoint.push(&map[startNode]);
+
+	cout << "Begin path searching...";
 
 	while (!nextPoint.empty()) {
-		point pInst = nextPoint.top();
-		pInst.used = true;
-		int newGCost = pInst.gCost + 1;
+		system("pause");
+		system("CLS");
+		point* pInst = nextPoint.top();
+		pInst->used = true;
+		//
+		cout << "change result: " << pInst->used << endl;
+		int newGCost = pInst->gCost + 1;
 
-		calculateCost(pInst.leftNeighbour, newGCost);
-		calculateCost(pInst.rightNeighbour, newGCost);
-		calculateCost(pInst.upNeighbour, newGCost);
-		calculateCost(pInst.downNeighbour, newGCost);
+		calculateCost(pInst->leftNeighbour, newGCost);
+		calculateCost(pInst->rightNeighbour, newGCost);
+		calculateCost(pInst->upNeighbour, newGCost);
+		calculateCost(pInst->downNeighbour, newGCost);
 		nextPoint.pop();
 
 		for (int i = 0; i < x*y; i++) {
-
+			//cout << "bool result: " << map[i].used << endl;
 			if (i == startNode)
 				cout << "S ";
 			else if (i == endNode)
 				cout << "E ";
+			else if (map[i].used)
+				cout << "* ";
 			else
 				cout << map[i].fCost << " ";
 
 			if ((i + 1) % x == 0)
 				cout << endl;
 		}
-		system("pause");
+		
 	}
 
 	

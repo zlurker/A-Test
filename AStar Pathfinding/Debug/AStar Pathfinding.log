@@ -1,4 +1,3 @@
 ﻿  AStar Pathfinding.cpp
-c:\users\gabriel_chia\documents\visual studio 2015\projects\astar pathfinding\astar pathfinding\astar pathfinding.cpp(117): warning C4101: 'coords': unreferenced local variable
   AStar Pathfinding.vcxproj -> C:\Users\gabriel_chia\documents\visual studio 2015\Projects\AStar Pathfinding\Debug\AStar Pathfinding.exe
   AStar Pathfinding.vcxproj -> C:\Users\gabriel_chia\documents\visual studio 2015\Projects\AStar Pathfinding\Debug\AStar Pathfinding.pdb (Full PDB)
