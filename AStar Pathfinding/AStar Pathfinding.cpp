@@ -9,7 +9,6 @@
 #include <unordered_map>
 using namespace std;
 
-
 const int x = 10;
 const int y = 10;
 int startNode, endNode = -1;
@@ -22,8 +21,8 @@ public:
 	int leftNeighbour;
 	int rightNeighbour;
 
-	bool oList;
-	bool cList;
+	bool openList;
+	bool used;
 	int hCost;
 	int gCost;
 	int fCost;
@@ -35,8 +34,11 @@ public:
 		rightNeighbour = -1;
 
 		hCost = -1;
-		gCost = 0;
+		gCost = -1;
 		fCost = 0;
+
+		used = false;
+		openList = false;
 	}
 };
 
@@ -44,6 +46,9 @@ struct orderPointValue
 {
 	bool operator() (point const &a, point const &b) { return a.fCost > b.fCost; }
 };
+
+priority_queue <point, vector<point>, orderPointValue> nextPoint;
+unordered_map<int, point> map;
 
 bool retCoords(int id, int* arr) {
 	if (id < 0 || id >= x*y)
@@ -54,11 +59,11 @@ bool retCoords(int id, int* arr) {
 	return true;
 }
 
-void calculateCost(point* pInst, int id, int gCost) {
+void calculateCost(int id, int gCost) {
 	if (id < 0 || id >= x*y)
 		return;
 
-	if (pInst->hCost == -1) {
+	if (map[id].hCost == -1) {
 
 		int coords0[2];
 		int coords1[2];
@@ -71,19 +76,24 @@ void calculateCost(point* pInst, int id, int gCost) {
 		xDiff = abs(coords1[1] - coords0[1]);
 		yDiff = abs(coords1[0] - coords0[0]);
 
-		pInst->hCost = (xDiff * xDiff) + (yDiff * yDiff);
+		map[id].hCost = (xDiff * xDiff) + (yDiff * yDiff);
 	}
 
-	if (pInst->gCost > gCost) {
-		pInst->gCost = gCost;
-		pInst->fCost = gCost + pInst->hCost;
+	if (map[id].gCost == -1 || map[id].gCost > gCost && !map[id].used) {
+		map[id].gCost = gCost;
+		map[id].fCost = gCost + map[id].hCost;
+		map[id].used = true;
+	}
+
+	if (!map[id].openList) {
+		map[id].openList = true;
+		nextPoint.push(map[id]);
 	}
 }
 
 int main()
 {
-	priority_queue <point, vector<point>, orderPointValue> nextPoint;
-	unordered_map<int, point> map;
+
 
 	int pointData[y][x] = {
 		{ 0,0,0,0,0,0,0,0,0,2 },
@@ -140,17 +150,32 @@ int main()
 	}
 
 	map[startNode].fCost = 0;
+	map[startNode].gCost = 0;
+	map[startNode].hCost = 0;
+	map[startNode].used = true;
 	nextPoint.push(map[startNode]);
 
 	while (!nextPoint.empty()) {
 		point pInst = nextPoint.top();
-
+		pInst.used = true;
 		int newGCost = pInst.gCost + 1;
 
-		calculateCost(&map[pInst.leftNeighbour],pInst.leftNeighbour,newGCost);
-		calculateCost(&map[pInst.rightNeighbour], pInst.rightNeighbour, newGCost);
-		calculateCost(&map[pInst.upNeighbour], pInst.upNeighbour, newGCost);
-		calculateCost(&map[pInst.downNeighbour], pInst.downNeighbour, newGCost);
+		calculateCost(pInst.leftNeighbour, newGCost);
+		calculateCost(pInst.rightNeighbour, newGCost);
+		calculateCost(pInst.upNeighbour, newGCost);
+		calculateCost(pInst.downNeighbour, newGCost);
+		nextPoint.pop();
+	}
+
+	for (int i = 0; i < x*y; i++) {
+
+		if (i == startNode || i == endNode)
+			cout << "* ";
+		else
+			cout << map[i].fCost << " ";
+
+		if ((i + 1) % x == 0)
+			cout << endl;
 	}
 
 	//for (int i = 0; i < y; i++)
