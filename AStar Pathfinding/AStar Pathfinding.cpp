@@ -13,7 +13,6 @@ const int x = 10;
 const int y = 10;
 int startNode, endNode = -1;
 
-
 class point {
 public:
 	int upNeighbour;
@@ -21,12 +20,12 @@ public:
 	int leftNeighbour;
 	int rightNeighbour;
 
-	bool openList;
 	bool used;
 	int hCost;
 	int gCost;
 	int fCost;
 	int pointId;
+	int updatedCost;
 
 	point() {
 		upNeighbour = -1;
@@ -39,16 +38,26 @@ public:
 		fCost = 0;
 
 		used = false;
-		openList = false;
 	}
+};
+
+
+class pointwrapper {
+public:
+	pointwrapper(point* ptr) {
+		pointer = ptr;
+	}
+
+	point* pointer;
+	int fCostVal;
 };
 
 struct orderPointValue
 {
-	bool operator() (point* const a, point* const b) { return a->fCost > b->fCost; }
+	bool operator() (pointwrapper const a, pointwrapper const b) { return a.fCostVal > b.fCostVal; }
 };
 
-priority_queue <point*, vector<point*>, orderPointValue> nextPoint;
+priority_queue <pointwrapper, vector<pointwrapper>, orderPointValue> nextPoint;
 unordered_map<int, point*> map;
 
 bool retCoords(int id, int* arr) {
@@ -83,13 +92,11 @@ void calculateCost(int id, int gCost) {
 	if (map[id]->gCost == -1 || map[id]->gCost > gCost && !map[id]->used) {
 		map[id]->gCost = gCost;
 		map[id]->fCost = gCost + map[id]->hCost;
-
+		map[id]->updatedCost = map[id]->fCost;
 	}
 
-	if (!map[id]->openList) {
-		map[id]->openList = true;
-		nextPoint.push(map[id]);
-	}
+	nextPoint.push(pointwrapper(map[id]));
+
 }
 
 int main()
@@ -151,14 +158,33 @@ int main()
 	map[startNode]->fCost = 0;
 	map[startNode]->gCost = 0;
 	map[startNode]->hCost = 0;
-	nextPoint.push(map[startNode]);
+	nextPoint.push(pointwrapper(map[startNode]));
 
 	cout << "Begin path searching...";
 
 	while (!nextPoint.empty()) {
+		point* pInst;
+		bool updated = false;
+
+		while (!updated) {
+			if (nextPoint.empty())
+				break;
+
+			pointwrapper pw = nextPoint.top();
+			pInst = pw.pointer;
+
+			if (pInst->fCost == pw.fCostVal)
+				updated = true;
+
+			nextPoint.pop();
+		}
+
+		if (pInst == nullptr)
+			break;
+
+		cout << "next cost" << pInst->fCost;
 		system("pause");
 		system("CLS");
-		point* pInst = nextPoint.top();
 
 		if (pInst->pointId == endNode) {
 			cout << "Path has been found!";
@@ -168,7 +194,7 @@ int main()
 
 		pInst->used = true;
 		//
-		cout << "change result: " << pInst->used << endl;
+		//cout << "change result: " << pInst->used << endl;
 		int newGCost = pInst->gCost + 1;
 
 		calculateCost(pInst->leftNeighbour, newGCost);
