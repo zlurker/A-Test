@@ -25,7 +25,6 @@ public:
 	int gCost;
 	int fCost;
 	int pointId;
-	int updatedCost;
 
 	point() {
 		upNeighbour = -1;
@@ -46,6 +45,8 @@ class pointwrapper {
 public:
 	pointwrapper(point* ptr) {
 		pointer = ptr;
+		fCostVal = ptr->fCost;
+		cout << "Adding cost: " << fCostVal << endl;
 	}
 
 	point* pointer;
@@ -92,7 +93,6 @@ void calculateCost(int id, int gCost) {
 	if (map[id]->gCost == -1 || map[id]->gCost > gCost && !map[id]->used) {
 		map[id]->gCost = gCost;
 		map[id]->fCost = gCost + map[id]->hCost;
-		map[id]->updatedCost = map[id]->fCost;
 	}
 
 	nextPoint.push(pointwrapper(map[id]));
@@ -172,6 +172,8 @@ int main()
 
 			pointwrapper pw = nextPoint.top();
 			pInst = pw.pointer;
+
+			cout << "Retrieved cost: " << pw.fCostVal << endl; 
 
 			if (pInst->fCost == pw.fCostVal)
 				updated = true;
