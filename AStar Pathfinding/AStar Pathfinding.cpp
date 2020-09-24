@@ -46,7 +46,7 @@ public:
 	pointwrapper(point* ptr) {
 		pointer = ptr;
 		fCostVal = ptr->fCost;
-		cout << "Adding cost: " << fCostVal << " (" << ptr->pointId << ")" << endl;
+		//cout << "Adding cost: " << fCostVal << " (" << ptr->pointId << ")" << endl;
 	}
 
 	point* pointer;
@@ -98,18 +98,39 @@ void calculateCost(int id, int gCost) {
 	nextPoint.push(pointwrapper(map[id]));
 }
 
+void displayMapGraphics() {
+
+
+	for (int i = 0; i < x*y; i++) {
+		//cout << "bool result: " << map[i].used << endl;
+		if (i == startNode)
+			cout << "S ";
+		else if (i == endNode)
+			cout << "E ";
+		else if (map.count(i) == 0)
+			cout << "B ";
+		else if (map[i]->used)
+			cout << "* ";
+		else
+			cout << "0 ";//map[i]->fCost << " ";
+
+		if ((i + 1) % x == 0)
+			cout << endl;
+	}
+}
+
 int main()
 {
 	int pointData[y][x] = {
-		{ 0,0,0,0,0,0,0,0,0,2 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,2 },
+		{ 0,3,3,3,3,3,3,3,3,3 },
+		{ 0,3,3,0,0,0,0,3,3,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,3,3,3,3,3,3,3,3,3 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,1,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
+		{ 3,3,3,3,0,0,0,0,0,0 },
+		{ 0,0,1,3,0,0,0,0,0,0 },
+		{ 0,3,3,3,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 }
 	};
 
@@ -137,7 +158,7 @@ int main()
 			map.insert(pair<int, point*>(idVal, p));
 
 			int leftCell = idVal - 10;
-			int downCell = idVal - 1;
+			int downCell = (idVal % y) == 0 ? -1 : idVal - 1;
 
 			if (map.count(leftCell) == 1) {
 				map[leftCell]->rightNeighbour = idVal;
@@ -165,6 +186,7 @@ int main()
 	nextPoint.push(pointwrapper(map[startNode]));
 
 	cout << "Begin path searching...";
+	system("pause");
 
 	while (!nextPoint.empty()) {
 		point* pInst;
@@ -177,9 +199,9 @@ int main()
 			pointwrapper pw = nextPoint.top();
 			pInst = pw.pointer;
 
-			cout << "Retrieved Cost: " << pw.fCostVal << "Actual Cost: " << pInst->fCost << endl;
+			//cout << "Retrieved Cost: " << pw.fCostVal << "Actual Cost: " << pInst->fCost << endl;
 
-			if (pInst->fCost == pw.fCostVal)
+			if (pInst->fCost == pw.fCostVal && !pInst->used)
 				updated = true;
 
 			nextPoint.pop();
@@ -190,22 +212,7 @@ int main()
 
 		pInst->used = true;
 
-		for (int i = 0; i < x*y; i++) {
-			//cout << "bool result: " << map[i].used << endl;
-			if (i == startNode)
-				cout << "S ";
-			else if (i == endNode)
-				cout << "E ";
-			else if (map.count(i) == 0)
-				cout << "B ";
-			else if (map[i]->used)
-				cout << "* ";
-			else
-				cout << map[i]->fCost << " ";
-
-			if ((i + 1) % x == 0)
-				cout << endl;
-		}
+		displayMapGraphics();
 
 		if (pInst->downNeighbour == endNode || pInst->upNeighbour == endNode || pInst->leftNeighbour == endNode || pInst->rightNeighbour == endNode) {
 			cout << "Path has been found!";
@@ -213,9 +220,8 @@ int main()
 			return 0;
 		}
 
-		system("pause");
+		//system("pause");
 		system("CLS");
-
 		//
 		//cout << "change result: " << pInst->used << endl;
 		int newGCost = pInst->gCost + 1;
@@ -225,7 +231,9 @@ int main()
 		calculateCost(pInst->upNeighbour, newGCost);
 		calculateCost(pInst->downNeighbour, newGCost);
 
-
+		//displayMapGraphics();
+		//system("pause");
+		//system("CLS");
 
 	}
 
