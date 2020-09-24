@@ -96,7 +96,6 @@ void calculateCost(int id, int gCost) {
 	}
 
 	nextPoint.push(pointwrapper(map[id]));
-
 }
 
 int main()
@@ -106,7 +105,7 @@ int main()
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
+		{ 0,3,3,3,3,3,3,3,3,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,1,0,0,0,0,0,0,0 },
@@ -120,6 +119,8 @@ int main()
 			int idVal = (i*x) + j;
 
 			p->pointId = idVal;
+
+
 			int leftCell = idVal - 10;
 			int downCell = idVal - 1;
 
@@ -134,6 +135,7 @@ int main()
 				p->downNeighbour = downCell;
 				//cout << "Transaction vertical with " << idVal << " and " << downCell << endl;
 			}
+
 
 			map.insert(pair<int, point*>(idVal, p));
 
@@ -173,7 +175,7 @@ int main()
 			pointwrapper pw = nextPoint.top();
 			pInst = pw.pointer;
 
-			cout << "Retrieved cost: " << pw.fCostVal << endl; 
+			cout << "Retrieved Cost: " << pw.fCostVal << "Actual Cost: " << pInst->fCost << endl;
 
 			if (pInst->fCost == pw.fCostVal)
 				updated = true;
@@ -184,26 +186,7 @@ int main()
 		if (pInst == nullptr)
 			break;
 
-		cout << "next cost" << pInst->fCost;
-		system("pause");
-		system("CLS");
-
-		if (pInst->pointId == endNode) {
-			cout << "Path has been found!";
-			system("pause");
-			return 0;
-		}
-
 		pInst->used = true;
-		//
-		//cout << "change result: " << pInst->used << endl;
-		int newGCost = pInst->gCost + 1;
-
-		calculateCost(pInst->leftNeighbour, newGCost);
-		calculateCost(pInst->rightNeighbour, newGCost);
-		calculateCost(pInst->upNeighbour, newGCost);
-		calculateCost(pInst->downNeighbour, newGCost);
-		nextPoint.pop();
 
 		for (int i = 0; i < x*y; i++) {
 			//cout << "bool result: " << map[i].used << endl;
@@ -219,6 +202,26 @@ int main()
 			if ((i + 1) % x == 0)
 				cout << endl;
 		}
+
+		if (pInst->downNeighbour == endNode || pInst->upNeighbour == endNode || pInst->leftNeighbour == endNode || pInst->rightNeighbour == endNode) {
+			cout << "Path has been found!";
+			system("pause");
+			return 0;
+		}
+
+		system("pause");
+		system("CLS");
+
+		//
+		//cout << "change result: " << pInst->used << endl;
+		int newGCost = pInst->gCost + 1;
+
+		calculateCost(pInst->leftNeighbour, newGCost);
+		calculateCost(pInst->rightNeighbour, newGCost);
+		calculateCost(pInst->upNeighbour, newGCost);
+		calculateCost(pInst->downNeighbour, newGCost);
+
+
 
 	}
 
