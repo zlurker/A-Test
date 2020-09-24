@@ -105,7 +105,7 @@ int main()
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,3,3,3,3,3,3,3,3,0 },
+		{ 0,3,3,3,3,3,3,3,3,3 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,1,0,0,0,0,0,0,0 },
@@ -115,29 +115,7 @@ int main()
 
 	for (int i = 0; i < y; i++)
 		for (int j = 0; j < x; j++) {
-			point* p = new point();
 			int idVal = (i*x) + j;
-
-			p->pointId = idVal;
-
-
-			int leftCell = idVal - 10;
-			int downCell = idVal - 1;
-
-			if (leftCell > -1) {
-				map[leftCell]->rightNeighbour = idVal;
-				p->leftNeighbour = leftCell;
-				//cout << "Transaction horizontal with " << idVal << " and " << leftCell << endl;
-			}
-
-			if (downCell > -1) {
-				map[downCell]->upNeighbour = idVal;
-				p->downNeighbour = downCell;
-				//cout << "Transaction vertical with " << idVal << " and " << downCell << endl;
-			}
-
-
-			map.insert(pair<int, point*>(idVal, p));
 
 			switch (pointData[i][j]) {
 			case 1:
@@ -148,6 +126,29 @@ int main()
 				endNode = idVal;
 				cout << "End: " << endNode << endl;
 				break;
+
+			case 3:
+				continue;
+			}
+
+			point* p = new point();
+
+			p->pointId = idVal;
+			map.insert(pair<int, point*>(idVal, p));
+
+			int leftCell = idVal - 10;
+			int downCell = idVal - 1;
+
+			if (map.count(leftCell) == 1) {
+				map[leftCell]->rightNeighbour = idVal;
+				p->leftNeighbour = leftCell;
+				//cout << "Transaction horizontal with " << idVal << " and " << leftCell << endl;
+			}
+
+			if (map.count(downCell) == 1) {
+				map[downCell]->upNeighbour = idVal;
+				p->downNeighbour = downCell;
+				//cout << "Transaction vertical with " << idVal << " and " << downCell << endl;
 			}
 		}
 
@@ -194,6 +195,8 @@ int main()
 				cout << "S ";
 			else if (i == endNode)
 				cout << "E ";
+			else if (map.count(i) == 0)
+				cout << "B ";
 			else if (map[i]->used)
 				cout << "* ";
 			else
