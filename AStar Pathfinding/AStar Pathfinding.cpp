@@ -46,7 +46,7 @@ public:
 	pointwrapper(point* ptr) {
 		pointer = ptr;
 		fCostVal = ptr->fCost;
-		cout << "Adding cost: " << fCostVal << endl;
+		cout << "Adding cost: " << fCostVal << " (" << ptr->pointId << ")" << endl;
 	}
 
 	point* pointer;
@@ -161,6 +161,7 @@ int main()
 	map[startNode]->fCost = 0;
 	map[startNode]->gCost = 0;
 	map[startNode]->hCost = 0;
+	map[startNode]->used = true;
 	nextPoint.push(pointwrapper(map[startNode]));
 
 	cout << "Begin path searching...";
