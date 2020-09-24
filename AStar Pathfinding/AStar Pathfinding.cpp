@@ -93,9 +93,10 @@ void calculateCost(int id, int gCost) {
 	if (map[id]->gCost == -1 || map[id]->gCost > gCost && !map[id]->used) {
 		map[id]->gCost = gCost;
 		map[id]->fCost = gCost + map[id]->hCost;
+		nextPoint.push(pointwrapper(map[id]));
 	}
 
-	nextPoint.push(pointwrapper(map[id]));
+	
 }
 
 void displayMapGraphics() {
@@ -122,13 +123,13 @@ void displayMapGraphics() {
 int main()
 {
 	int pointData[y][x] = {
-		{ 0,3,0,0,0,0,0,0,0,2 },
+		{ 0,0,0,0,0,0,0,0,0,2 },
 		{ 0,3,3,3,3,3,3,3,3,3 },
 		{ 0,3,3,0,0,0,0,3,3,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
 		{ 0,3,3,3,3,3,3,3,3,3 },
 		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 3,3,3,3,0,0,0,0,0,0 },
+		{ 0,3,3,3,0,0,0,0,0,0 },
 		{ 0,0,1,3,0,0,0,0,0,0 },
 		{ 0,3,3,3,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0 }
@@ -192,9 +193,7 @@ int main()
 		point* pInst;
 		bool updated = false;
 
-		while (!updated) {
-			if (nextPoint.empty())
-				break;
+		while (!updated && !nextPoint.empty()) {
 
 			pointwrapper pw = nextPoint.top();
 			pInst = pw.pointer;
@@ -212,6 +211,7 @@ int main()
 
 		pInst->used = true;
 
+		system("CLS");
 		displayMapGraphics();
 
 		if (pInst->downNeighbour == endNode || pInst->upNeighbour == endNode || pInst->leftNeighbour == endNode || pInst->rightNeighbour == endNode) {
@@ -221,7 +221,7 @@ int main()
 		}
 
 		//system("pause");
-		system("CLS");
+		
 		//
 		//cout << "change result: " << pInst->used << endl;
 		int newGCost = pInst->gCost + 1;
