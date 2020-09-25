@@ -25,6 +25,8 @@ public:
 	int gCost;
 	int fCost;
 	int pointId;
+	int prevPoint;
+	bool finalPath;
 
 	point() {
 		upNeighbour = -1;
@@ -37,6 +39,7 @@ public:
 		fCost = 0;
 
 		used = false;
+		finalPath = false;
 	}
 };
 
@@ -70,7 +73,7 @@ bool retCoords(int id, int* arr) {
 	return true;
 }
 
-void calculateCost(int id, int gCost) {
+void calculateCost(int id, point* pt) {
 	if (id < 0 || id >= x*y)
 		return;
 
@@ -90,13 +93,14 @@ void calculateCost(int id, int gCost) {
 		map[id]->hCost = (xDiff * xDiff) + (yDiff * yDiff);
 	}
 
-	if (map[id]->gCost == -1 || map[id]->gCost > gCost && !map[id]->used) {
-		map[id]->gCost = gCost;
-		map[id]->fCost = gCost + map[id]->hCost;
+	int newGCost = pt->gCost + 1;
+
+	if (map[id]->gCost == -1 || map[id]->gCost > newGCost && !map[id]->used) {
+		map[id]->gCost = newGCost;
+		map[id]->fCost = newGCost + map[id]->hCost;
+		map[id]->prevPoint = pt->pointId;
 		nextPoint.push(pointwrapper(map[id]));
 	}
-
-	
 }
 
 void displayMapGraphics() {
@@ -110,6 +114,8 @@ void displayMapGraphics() {
 			cout << "E ";
 		else if (map.count(i) == 0)
 			cout << "B ";
+		else if (map[i]->finalPath)
+			cout << "! ";
 		else if (map[i]->used)
 			cout << "* ";
 		else
@@ -120,19 +126,29 @@ void displayMapGraphics() {
 	}
 }
 
+void chartBackwardsPath(int id) {
+
+	int target = id;
+
+	while (target != startNode) {
+		map[target]->finalPath = true;
+		target = map[target]->prevPoint;
+	}
+}
+
 int main()
 {
 	int pointData[y][x] = {
-		{ 0,0,0,0,0,0,0,0,0,2 },
-		{ 0,3,3,3,3,3,3,3,3,3 },
-		{ 0,3,3,0,0,0,0,3,3,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,3,3,3,3,3,3,3,3,3 },
-		{ 0,0,0,0,0,0,0,0,0,0 },
-		{ 0,3,3,3,0,0,0,0,0,0 },
-		{ 0,0,1,3,0,0,0,0,0,0 },
-		{ 0,3,3,3,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0 }
+		{ 2,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,3,3,3,0 },
+		{ 0,3,0,0,0,0,3,1,3,0 },
+		{ 0,0,0,0,0,0,3,0,0,0 }
 	};
 
 	for (int i = 0; i < y; i++)
@@ -159,7 +175,7 @@ int main()
 			map.insert(pair<int, point*>(idVal, p));
 
 			int leftCell = idVal - 10;
-			int downCell = (idVal % y) == 0 ? -1 : idVal - 1;
+			int downCell = (idVal % x) == 0 ? -1 : idVal - 1;
 
 			if (map.count(leftCell) == 1) {
 				map[leftCell]->rightNeighbour = idVal;
@@ -215,21 +231,24 @@ int main()
 		displayMapGraphics();
 
 		if (pInst->downNeighbour == endNode || pInst->upNeighbour == endNode || pInst->leftNeighbour == endNode || pInst->rightNeighbour == endNode) {
+			system("CLS");
+			chartBackwardsPath(pInst->pointId);
+			displayMapGraphics();
 			cout << "Path has been found!";
 			system("pause");
 			return 0;
 		}
 
 		//system("pause");
-		
+
 		//
 		//cout << "change result: " << pInst->used << endl;
-		int newGCost = pInst->gCost + 1;
+		//int newGCost = pInst->gCost + 1;
 
-		calculateCost(pInst->leftNeighbour, newGCost);
-		calculateCost(pInst->rightNeighbour, newGCost);
-		calculateCost(pInst->upNeighbour, newGCost);
-		calculateCost(pInst->downNeighbour, newGCost);
+		calculateCost(pInst->leftNeighbour, pInst);
+		calculateCost(pInst->rightNeighbour, pInst);
+		calculateCost(pInst->upNeighbour, pInst);
+		calculateCost(pInst->downNeighbour, pInst);
 
 		//displayMapGraphics();
 		//system("pause");
