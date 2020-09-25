@@ -90,7 +90,8 @@ void calculateCost(int id, point* pt) {
 		xDiff = abs(coords1[1] - coords0[1]);
 		yDiff = abs(coords1[0] - coords0[0]);
 
-		map[id]->hCost = (xDiff * xDiff) + (yDiff * yDiff);
+		//map[id]->hCost = sqrt((xDiff * xDiff) + (yDiff * yDiff));
+		map[id]->hCost = xDiff + yDiff;
 	}
 
 	int newGCost = pt->gCost + 1;
@@ -145,9 +146,9 @@ int main()
 		{ 0,3,0,0,0,0,0,0,0,0 },
 		{ 0,3,0,0,0,0,0,0,0,0 },
 		{ 0,3,0,0,0,0,0,0,0,0 },
-		{ 0,3,3,3,0,0,0,0,0,0 },
-		{ 0,3,0,3,0,0,3,3,3,0 },
-		{ 0,3,0,3,0,0,3,1,3,0 },
+		{ 0,3,0,0,0,0,0,0,0,0 },
+		{ 0,3,0,0,0,0,3,3,3,0 },
+		{ 0,3,0,0,0,0,3,1,3,0 },
 		{ 0,0,0,0,0,0,3,0,0,0 }
 	};
 
